@@ -1,0 +1,19 @@
+defaults:
+  - _self_
+  # Import the SKELify-SPIN callback.
+  - /pipeline/skelify-refiner@skelify
+
+_target_: lib.modeling.callbacks.SKELifySPIN
+
+# This configuration are for frozen backbone exp with batch_size = 24000
+
+cfg:
+  interval: 10
+  batch_size: 24000  # when greater than `interval * dataloader's batch_size`, it's equivalent to that
+  max_batches_per_round: 1  # only the latest k * batch_size items are SPINed to save time
+  # better_pgt_fn: '${_pm_.inputs}/datasets/skel_training_data/spin/better_pseudo_gt.npz'
+  better_pgt_fn: '${output_dir}/better_pseudo_gt.npz'
+  skip_warm_up_steps: 10000
+  # skip_warm_up_steps: 0
+  update_better_pgt: True
+  valid_betas_threshold: 2

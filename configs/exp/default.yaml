@@ -1,0 +1,16 @@
+# @package _global_
+defaults:
+  # Use absolute path, cause the root in this file is `configs/exp/` rather than `configs/`.
+  # - /data: ...
+
+  # Configurations in this file should have the highest priority.
+  - _self_
+
+# ======= Overwrite Section =======
+# (Do not use as much as possible!)
+
+
+
+# ====== Main Section ======
+
+exp_topic: !!null  # Name of experiment will determine the output folder.

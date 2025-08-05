@@ -1,0 +1,54 @@
+_target_: lib.modeling.pipelines.MambaPipeline
+
+name: Mamba
+
+cfg:
+  pd_poses_repr: 'rotation_6d'  # poses representation for prediction, choices: 'euler_angle' | 'rotation_6d'
+  sp_poses_repr: 'rotation_matrix'  # poses representation for supervision, choices: 'euler_angle' | 'rotation_matrix'
+
+  # Body Models
+  # SKEL: ${_hub_.models.body_models.skel_hsmr}
+  SKEL: ${_hub_.models.body_models.skel_mix_hsmr}
+
+  # Backbone and its checkpoint.
+  backbone: mamba2
+  backbone_ckpt: null
+
+  # Head to get the parameters.
+  head:
+    _target_: lib.modeling.networks.heads.SKELTransformerDecoderHead
+    cfg:
+      pd_poses_repr: ${...pd_poses_repr}
+      transformer_decoder:
+        depth: 6
+        heads: 8
+        mlp_dim: 1024
+        dim_head: 64
+        dropout: 0.0
+        emb_dropout: 0.0
+        norm: 'layer'
+        context_dim: 1280
+
+  optimizer:
+    _target_: torch.optim.AdamW
+    lr: 2e-5
+    # lr: 3e-4
+    #weight_decay: 1e-4
+    weight_decay: 1e-4
+
+  # This may be redesigned, e.g., we can add a loss object to maintain the calculation of the loss, or a callback.
+  loss_weights:
+    kp3d: 0.05
+    kp2d: 0.01
+    prior: 0.0
+    poses_orient: 0.002
+    poses_body: 0.001
+    betas: 0.0005
+    # adversarial: 0.0005
+
+  policy: ${policy}
+  logger: ${logger}
+
+  use_temporal_fusion: true
+  temporal_fusion:
+    hidden_dim: 768

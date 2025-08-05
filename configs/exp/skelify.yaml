@@ -1,0 +1,22 @@
+#SKELify优化器
+# @package _global_
+defaults:
+  - /pipeline: skelify-full
+  - /data: ActionHSMR_v1_full
+  # Configurations in this file should have the highest priority.
+  - _self_
+
+# ======= Overwrite Section =======
+# (Do not use as much as possible!)
+
+
+
+# ====== Main Section ======
+
+exp_topic: 'SKELify-Full'
+
+enable_time_monitor: True
+
+logger:
+  interval_skelify: 1
+  samples_per_record: 1

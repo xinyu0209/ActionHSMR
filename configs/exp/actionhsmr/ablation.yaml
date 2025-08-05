@@ -1,0 +1,61 @@
+# @package _global_
+defaults:
+  - /pipeline: mamba
+  - /data: ActionHSMR_v1_full
+  # Configurations in this file
+  - _self_
+  # Import callbacks.
+  - /callback/ckpt/top1-p1k@callbacks.ckpt
+  - /callback/skelify-spin/i300kb1@callbacks.SKELifySPIN
+  # - /callback/skelify-spin/read_only@callbacks.SKELifySPIN
+
+# ======= Overwrite Section =======
+# (Do not use as much as possible!)
+
+pipeline:
+  cfg:
+    backbone: ${_hub_.models.backbones.mamba2}
+    backbone_ckpt: null
+    # '${_pm_.inputs}/backbone/vitpose_backbone.pth'
+    freeze_backbone: False
+# pipeline:
+#   cfg:
+#     backbone:
+#       _target_: lib.modeling.networks.backbones.mamba2.Mamba2
+#       img_size: [256,192]
+#       patch_size: 16
+#       in_chans: 3
+#       embed_dim: 1280
+#       depth: 32
+#       num_frames: 3
+#     backbone_ckpt: null
+#     freeze_backbone: False
+
+data:
+  cfg:
+    train:
+      dataloader:
+        batch_size: 8
+    mocap: NULL
+
+
+# ====== Main Section ======
+
+exp_topic: 'Action-HSMR-test'
+
+enable_time_monitor: False
+
+seed: NULL
+ckpt_path: NULL
+
+logger:
+  interval: 1000
+  interval_skelify: 10
+  samples_per_record: 5
+
+task: 'fit'
+pl_trainer:
+  devices: 1
+  max_epochs: 150
+  deterministic: false
+  precision: "16-mixed" 

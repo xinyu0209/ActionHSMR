@@ -1,0 +1,33 @@
+defaults:
+  # Load each sub-hub.
+  - _hub_/datasets@_hub_.datasets
+  - _hub_/models@_hub_.models
+
+  # Set up the template.
+  - _self_
+
+  # Register some defaults.
+  - exp: default
+  - policy: default
+
+
+# exp_name: !!null  # Name of experiment will determine the output folder.
+exp_name: '${exp_topic}-${exp_tag}'
+exp_topic: !!null  # Theme of the experiment.
+exp_tag: 'train'  # Tag of the experiment.
+
+
+output_dir: ${_pm_.root}/data_outputs/exp/${exp_name}  # Output directory for the experiment.
+# output_dir: ${_pm_.root}/data_outputs/exp/${now:%Y-%m-%d}/${exp_name}  # Output directory for the experiment.
+
+hydra:
+  run:
+    dir: ${output_dir}
+
+
+# Information from `PathManager`, which will be automatically set by entrypoint wrapper.
+# The related implementation is in `lib/utils/cfg_utils.py`:`entrypoint_with_args`.
+_pm_:
+  root: !!null
+  inputs: !!null
+  outputs: !!null

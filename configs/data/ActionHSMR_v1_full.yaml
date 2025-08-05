@@ -1,0 +1,89 @@
+_target_: lib.data.modules.action_v1.data_module.DataModule
+
+name: ActionHSMR_V1
+
+cfg:
+
+  train:
+    cfg:
+      # Loader settings.
+      suppress_pgt_params_pve_max_thresh: 0.06
+      suppress_kp_conf_thresh: 0.3
+      suppress_betas_thresh: 3.0
+      poses_betas_simultaneous: True
+      filter_insufficient_kp_cnt: 4
+      suppress_insufficient_kp_thresh: 0.0
+      filter_reproj_err_thresh: 31000
+      regularize_invalid_betas: True
+      image_augmentation: ${...image_augmentation}
+      policy: ${...policy}
+
+    datasets:
+      - name: 'MPI-INF-3DHP'
+        item: ${_hub_.datasets.train.hsmr.mpi_inf_3dhp}
+        weight: 0.1
+      - name: 'H36M'
+        item: ${_hub_.datasets.train.hsmr.h36m}
+        weight: 0.3
+      - name: 'INSTA'
+        item: ${_hub_.datasets.train.hsmr.insta}
+        weight: 0.6
+
+    dataloader:
+      drop_last: True
+      batch_size: 8
+      num_workers: 8          
+      prefetch_factor: 4           
+      persistent_workers: True     
+      pin_memory: True            
+
+  mocap:
+    cfg: ${_hub_.datasets.mocap.bioamass_v1}
+    dataloader:
+      batch_size: 600
+      drop_last: True
+      shuffle: True
+      num_workers: 4               
+      prefetch_factor: 4
+      persistent_workers: True
+      pin_memory: True
+
+  eval:
+    cfg:
+      image_augmentation: ${...image_augmentation}
+      policy: ${...policy}
+
+    datasets:
+      - name: 'LSP-EXTENDED'
+        item: ${_hub_.datasets.eval.lsp_extended}
+      - name: 'H36M-VAL-P2'
+        item: ${_hub_.datasets.eval.h36m_val_p2}
+      - name: '3DPW-TEST'
+        item: ${_hub_.datasets.eval.3dpw_test}
+      - name: 'POSETRACK-VAL'
+        item: ${_hub_.datasets.eval.posetrack_val}
+      - name: 'COCO-VAL'
+        item: ${_hub_.datasets.eval.coco_val}
+      - name: 'MOYO'
+        item: ${_hub_.datasets.eval.moyo_v2}
+
+    dataloader:
+      shuffle: False
+      batch_size: 128
+      num_workers: 12
+      prefetch_factor: 2
+      persistent_workers: True
+      pin_memory: True
+
+  # Augmentation settings.
+  image_augmentation:
+    trans_factor: 0.02
+    bbox_scale_factor: 0.3
+    rot_aug_rate: 0.6
+    rot_factor: 30
+    do_flip: True
+    flip_aug_rate: 0.5
+    extreme_crop_aug_rate: 0.10
+    half_color_scale: 0.2
+
+  policy: ${policy}

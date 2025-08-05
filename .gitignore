@@ -1,0 +1,18 @@
+# Caches.
+.DS_Store
+__pycache__
+*.egg-info
+
+# VEnv.
+.hsmr_env
+
+# Hydra dev.
+outputs
+
+# Development tools.
+.vscode
+pyrightconfig.json
+
+# Logs.
+gpu_monitor.log
+.ipynb_checkpoints/

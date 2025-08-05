@@ -1,0 +1,83 @@
+body_models:
+
+  skel_mix_hsmr:
+    _target_: lib.body_models.skel_wrapper.SKELWrapper
+    model_path: '${_pm_.inputs}/body_models/skel/skel_models_v1.1'
+    gender: male  #The male body model as a parameter may have a relatively large error. Consider using a neutral one
+    joint_regressor_extra: '${_pm_.inputs}/body_models/SMPL_to_J19.pkl'
+    joint_regressor_custom: '${_pm_.inputs}/body_models/J_regressor_SKEL_mix_MALE.pkl'
+
+  skel_hsmr:
+    _target_: lib.body_models.skel_wrapper.SKELWrapper
+    model_path: '${_pm_.inputs}/body_models/skel'
+    gender: male  # Use male since we don't have neutral model.
+    joint_regressor_extra: '${_pm_.inputs}/body_models/SMPL_to_J19.pkl'
+    # joint_regressor_custom: '${_pm_.inputs}/body_models/J_regressor_SMPL_MALE.pkl'
+
+  smpl_hsmr:
+    _target_: lib.body_models.smpl_wrapper.SMPLWrapper
+    model_path: '${_pm_.inputs}/body_models/smpl'
+    gender: male  # align with skel_hsmr
+    num_body_joints: 23
+    joint_regressor_extra: '${_pm_.inputs}/body_models/SMPL_to_J19.pkl'
+
+  smpl_hsmr_neutral:
+    _target_: lib.body_models.smpl_wrapper.SMPLWrapper
+    model_path: '${_pm_.inputs}/body_models/smpl'
+    gender: neutral  # align with skel_hsmr
+    num_body_joints: 23
+    joint_regressor_extra: '${_pm_.inputs}/body_models/SMPL_to_J19.pkl'
+
+backbones:
+
+  vit_b: # VIT-base 
+    _target_: lib.modeling.networks.backbones.ViT
+    img_size: [256, 192]
+    patch_size: 16
+    embed_dim: 768
+    depth: 12
+    num_heads: 12
+    ratio: 1
+    use_checkpoint: False
+    mlp_ratio: 4
+    qkv_bias: True
+    drop_path_rate: 0.3
+
+  vit_h:  # VIT-huge
+    _target_: lib.modeling.networks.backbones.ViT
+    img_size: [256, 192]
+    patch_size: 16
+    embed_dim: 1280
+    depth: 32
+    num_heads: 16
+    ratio: 1
+    use_checkpoint: False
+    mlp_ratio: 4
+    qkv_bias: True
+    drop_path_rate: 0.55
+
+  mamba_h: 
+    _target_: lib.modeling.networks.backbones.Mamba 
+    img_size: [256, 192]
+    patch_size: 16
+    embed_dim: 1280     
+    depth: 32         
+    d_state: 16       
+    d_conv: 4           
+    expand: 2       
+    drop_path_rate: 0.55 
+    mlp_ratio: 4       
+    use_checkpoint: False 
+
+  mamba2:  # vision mamba
+    _target_: lib.modeling.networks.backbones.Mamba2
+    img_size: [256, 192]
+    patch_size: 16
+    embed_dim: 1280
+    depth: 12
+    ratio: 1
+    use_checkpoint: False
+    d_state: 16
+    d_conv: 4
+    expand: 2
+    enhancer_kernel: 3

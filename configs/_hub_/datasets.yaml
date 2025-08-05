@@ -1,0 +1,84 @@
+
+train:
+  hsmr:  # Fitted according to the SMPL's vertices.
+    # Standard 4 datasets.
+    mpi_inf_3dhp:
+      name: 'HSMR-MPI-INF-3DHP-train-pruned'
+      urls: ${_pm_.inputs}/hsmr_training_data/mpi_inf_3dhp-tars/{000000..000012}.tar
+      epoch_size: 1_000
+    h36m:
+      name: 'HSMR-H36M-train'
+      urls: ${_pm_.inputs}/hsmr_training_data/h36m-tars/{000000..000312}.tar
+      epoch_size: 3_000
+    mpii:  # Independent frame
+      name: 'HSMR-MPII-train'
+      urls: ${_pm_.inputs}/hsmr_training_data/mpii-tars/{000000..000009}.tar
+      epoch_size: 10_000
+    coco14: # Independent frame
+      name: 'HSMR-COCO14-train'
+      urls: ${_pm_.inputs}/hsmr_training_data/coco14-tars/{000000..000017}.tar
+      epoch_size: 18_000
+    # The rest full datasets for HMR2.0.
+    coco14vit:  # Independent frame
+      name: 'HSMR-COCO14-vit-train'
+      urls: ${_pm_.inputs}/hsmr_training_data/coco14vit-tars/{000000..000044}.tar
+      epoch_size: 45_000
+    aic:  # Independent frame
+      name: 'HSMR-AIC-train'
+      urls: ${_pm_.inputs}/hsmr_training_data/aic-tars/{000000..000209}.tar
+      epoch_size: 210_000
+    ava:  # Independent frame
+      name: 'HSMR-AVA-train'
+      urls: ${_pm_.inputs}/hsmr_training_data/ava-tars/{000000..000184}.tar
+      epoch_size: 185_000
+    insta:
+      name: 'HSMR-INSTA-train'
+      urls: ${_pm_.inputs}/hsmr_training_data/insta-tars/{000000..003657}.tar
+      epoch_size: 3_658_000
+
+mocap:
+  bioamass_v1:
+    dataset_file: ${_pm_.inputs}/datasets/amass_skel/data_v1.npz
+    pve_threshold: 0.05
+  cmu_mocap:
+    dataset_file: ${_pm_.inputs}/hmr2_training_data/cmu_mocap.npz
+
+eval:
+  #3D
+  h36m_val_p2:
+    dataset_file: ${_pm_.inputs}/hmr2_evaluation_data/h36m_val_p2.npz
+    img_root: ${_pm_.inputs}/datasets/h36m/images
+    kp_list: [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 43]
+    use_hips: true
+
+  #3D
+  moyo_v2:
+    dataset_file: ${_pm_.inputs}/hsmr_evaluation_data/moyo_v2.npz
+    img_root: ${_pm_.inputs}/datasets/moyo
+    kp_list: [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 43]
+    use_hips: true
+    
+  #3D
+  3dpw_test:
+    dataset_file: ${_pm_.inputs}/hmr2_evaluation_data/3dpw_test.npz
+    img_root: ${_pm_.inputs}/datasets/3dpw
+    kp_list: [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 43]
+    use_hips: false
+
+  # no source
+  posetrack_val:
+    dataset_file: ${_pm_.inputs}/hmr2_evaluation_data/posetrack_2018_val.npz
+    img_root: ${_pm_.inputs}/datasets/posetrack/posetrack2018/posetrack_data/
+    kp_list: [0] # dummy
+    
+  #2D
+  lsp_extended:
+    dataset_file: ${_pm_.inputs}/hmr2_evaluation_data/hr-lspet_train.npz
+    img_root: ${_pm_.inputs}/datasets/hr-lspet
+    kp_list: [0] # dummy
+
+  #2D
+  coco_val:
+    dataset_file: ${_pm_.inputs}/hmr2_evaluation_data/coco_val.npz
+    img_root: ${_pm_.inputs}/datasets/coco
+    kp_list: [0] # dummy

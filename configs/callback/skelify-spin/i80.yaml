@@ -1,0 +1,15 @@
+defaults:
+  - _self_
+  # Import the SKELify-SPIN callback.
+  - /pipeline/skelify-refiner@skelify
+
+_target_: lib.modeling.callbacks.SKELifySPIN
+
+cfg:
+  interval: 80
+  batch_size: 24000  # when greater than `interval * dataloader's batch_size`, it's equivalent to that
+  # better_pgt_fn: '${_pm_.inputs}/datasets/skel_training_data/spin/better_pseudo_gt.npz'
+  better_pgt_fn: '${output_dir}/better_pseudo_gt.npz'
+  skip_warm_up_steps: 5000
+  update_better_pgt: True
+  valid_betas_threshold: 2

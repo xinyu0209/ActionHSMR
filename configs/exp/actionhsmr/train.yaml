@@ -1,0 +1,48 @@
+# @package _global_
+defaults:
+  - /pipeline: actionhsmr
+  - /data: ActionHSMR_v1_full
+  # Configurations in this file
+  - _self_
+  # Import callbacks. 
+  - /callback/ckpt/top1-p1k@callbacks.ckpt
+  - /callback/skelify-spin/i300kb1@callbacks.SKELifySPIN
+  # - /callback/skelify-spin/read_only@callbacks.SKELifySPIN
+
+# ======= Overwrite Section =======
+
+pipeline:
+  cfg:
+    backbone: ${_hub_.models.backbones.vit_h}
+    backbone_ckpt: '${_pm_.inputs}/backbone/vitpose_backbone.pth'
+    freeze_backbone: True
+    use_refinement: True
+
+data:
+  cfg:
+    train:
+      dataloader:
+        batch_size: 8
+    mocap: NULL
+
+
+# ====== Main Section ======
+
+exp_topic: 'Action-HSMR-train'
+
+enable_time_monitor: True
+
+seed: NULL
+ckpt_path: NULL
+
+logger:
+  interval: 500
+  interval_skelify: 10
+  samples_per_record: 5
+
+task: 'fit'
+pl_trainer:
+  devices: 1              
+  max_epochs: 100
+  deterministic: false
+  precision: 16-mixed

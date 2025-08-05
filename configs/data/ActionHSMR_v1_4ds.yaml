@@ -1,0 +1,84 @@
+_target_: lib.data.modules.action_v1.data_module.DataModule
+
+name: ActionHSMR_V1
+
+cfg:
+
+  train:
+    cfg:
+      # Loader settings.
+      suppress_pgt_params_pve_max_thresh: 0.06  # Mark PVE-MAX larger than this value as invalid.
+      suppress_kp_conf_thresh: 0.3  # Mark key-point confidence smaller than this value as invalid.
+      suppress_betas_thresh: 3.0  # Mark betas having components larger than this value as invalid.
+      poses_betas_simultaneous: True  # Sync poses and betas for the small person.
+      filter_insufficient_kp_cnt: 4
+      suppress_insufficient_kp_thresh: 0.0
+      filter_reproj_err_thresh: 31000
+      regularize_invalid_betas: True
+      # Others.
+      image_augmentation: ${...image_augmentation}
+      policy: ${...policy}
+
+    datasets:
+      - name: 'H36M'
+        item: ${_hub_.datasets.train.hsmr.h36m}
+        weight: 0.3
+      - name: 'MPII'
+        item: ${_hub_.datasets.train.hsmr.mpii}
+        weight: 0.1
+      - name: 'COCO14'
+        item: ${_hub_.datasets.train.hsmr.coco14}
+        weight: 0.4
+      - name: 'MPI-INF-3DHP'
+        item: ${_hub_.datasets.train.hsmr.mpi_inf_3dhp}
+        weight: 0.2
+
+    dataloader:
+      drop_last: True
+      batch_size: 300
+      num_workers: 6
+      prefetch_factor: 2
+
+  # mocap:
+  #   cfg: ${_hub_.datasets.mocap.bioamass_v1}
+  #   dataloader:
+  #     batch_size: 600  # num_train:2 * batch_size:300 (from HMR2.0's cfg)
+  #     drop_last: True
+  #     shuffle: True
+  #     num_workers: 1
+
+  eval:
+    cfg:
+      image_augmentation: ${...image_augmentation}
+      policy: ${...policy}
+
+    datasets:
+      - name: 'LSP-EXTENDED'
+        item: ${_hub_.datasets.eval.lsp_extended}
+      - name: 'H36M-VAL-P2'
+        item: ${_hub_.datasets.eval.h36m_val_p2}
+      - name: '3DPW-TEST'
+        item: ${_hub_.datasets.eval.3dpw_test}
+      - name: 'POSETRACK-VAL'
+        item: ${_hub_.datasets.eval.posetrack_val}
+      - name: 'COCO-VAL'
+        item: ${_hub_.datasets.eval.coco_val}
+
+    dataloader:
+      shuffle: False
+      batch_size: 300
+      num_workers: 6
+
+  # Augmentation settings.
+  image_augmentation:
+    trans_factor: 0.02
+    bbox_scale_factor: 0.3
+    rot_aug_rate: 0.6
+    rot_factor: 30
+    do_flip: True
+    flip_aug_rate: 0.5
+    extreme_crop_aug_rate: 0.10
+    half_color_scale: 0.2
+
+  # Others.
+  policy: ${policy}

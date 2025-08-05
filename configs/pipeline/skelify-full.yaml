@@ -1,0 +1,99 @@
+# SKELify伪标签优化 fitting 2D keypoints
+_target_: lib.modeling.optim.SKELify
+
+name: SKELify
+
+cfg:
+  skel_model: ${_hub_.models.body_models.skel_mix_hsmr}
+
+  _f_normalize_kp2d: True
+  _f_normalize_kp2d_to_mean: False
+  _w_angle_prior_scale: 1.7
+
+  phases:
+    # ================================
+    # ⛩️ Part 1: Camera initialization.
+    # --------------------------------
+    STAGE-camera-init:
+      max_loop: 30
+      params_keys: ['cam_t', 'poses_orient'] # Only these two parameters are optimized at this stage
+      parts: ['torso']
+      optimizer: ${...optimizer}
+      losses:
+        f_normalize_kp2d: ${...._f_normalize_kp2d}
+        f_normalize_kp2d_to_mean: ${...._f_normalize_kp2d_to_mean}
+        w_depth: 100.0
+        w_reprojection: 1.78
+    # ================================
+
+    # ================================
+    # ⛩️ Part 2: Overall optimization. All parameters have been optimized
+    # --------------------------------
+    STAGE-overall-1:
+      max_loop: 30
+      params_keys: ['cam_t', 'poses_orient', 'poses_body', 'betas']  
+      parts: ['all']
+      optimizer: ${...optimizer}
+      losses:
+        f_normalize_kp2d: ${...._f_normalize_kp2d}
+        f_normalize_kp2d_to_mean: ${...._f_normalize_kp2d_to_mean}
+        w_reprojection: 1.0
+        w_shape_prior: 100.0
+        w_angle_prior: 404.0
+        w_angle_prior_scale: ${...._w_angle_prior_scale}  # TODO: Finalize it.
+    # --------------------------------
+    STAGE-overall-2:
+      max_loop: 30
+      params_keys: ['cam_t', 'poses_orient', 'poses_body', 'betas']
+      optimizer: ${...optimizer}
+      parts: ['all']
+      losses:
+        f_normalize_kp2d: ${...._f_normalize_kp2d}
+        f_normalize_kp2d_to_mean: ${...._f_normalize_kp2d_to_mean}
+        w_reprojection: 1.0
+        w_shape_prior: 50.0
+        w_angle_prior: 404.0
+        w_angle_prior_scale: ${...._w_angle_prior_scale}  # TODO: Finalize it.
+    # --------------------------------
+    STAGE-overall-3:
+      max_loop: 30
+      params_keys: ['cam_t', 'poses_orient', 'poses_body', 'betas']
+      parts: ['all']
+      optimizer: ${...optimizer}
+      losses:
+        f_normalize_kp2d: ${...._f_normalize_kp2d}
+        f_normalize_kp2d_to_mean: ${...._f_normalize_kp2d_to_mean}
+        w_reprojection: 1.0
+        w_shape_prior: 10.0
+        w_angle_prior: 57.4
+        w_angle_prior_scale: ${...._w_angle_prior_scale}  # TODO: Finalize it.
+    # --------------------------------
+    STAGE-overall-4:
+      max_loop: 30
+      params_keys: ['cam_t', 'poses_orient', 'poses_body', 'betas']
+      parts: ['all']
+      optimizer: ${...optimizer}
+      losses:
+        f_normalize_kp2d: ${...._f_normalize_kp2d}
+        f_normalize_kp2d_to_mean: ${...._f_normalize_kp2d_to_mean}
+        w_reprojection: 1.0
+        w_shape_prior: 5.0
+        w_angle_prior: 4.78
+        w_angle_prior_scale: ${...._w_angle_prior_scale}  # TODO: Finalize it.
+    # ================================
+
+  optimizer:
+    _target_: torch.optim.LBFGS
+    lr: 1
+    line_search_fn: 'strong_wolfe'
+    tolerance_grad: ${..early_quit_thresholds.abs}
+    tolerance_change: ${..early_quit_thresholds.rel}
+
+  early_quit_thresholds:
+    abs: 1e-9
+    rel: 1e-9
+
+  img_patch_size: ${policy.img_patch_size}
+  focal_length: ${policy.focal_length}
+
+  logger: ${logger}
